@@ -1,469 +1,372 @@
-<!DOCTYPE html><html lang="id"><head><meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Untuk Imbi ❤️</title><!-- Tailwind --><script src="https://cdn.tailwindcss.com"></script><!-- Font --><link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Quicksand:wght@400;500;700&display=swap" rel="stylesheet"><link rel="stylesheet" href="style.css"></head><body><!-- ===================================== --><!-- AUDIO --><!-- ===================================== --><audio id="bgMusic" loop>
-    <source src="assets/bgmusic.mp3" type="audio/mpeg">
-</audio><button id="muteBtn">
-    🔊
-</button><!-- ===================================== --><!-- FLOWER CONTAINER --><!-- ===================================== --><div id="flowerRain"></div><!-- ===================================== --><!-- LOADING SCREEN --><!-- ===================================== --><section id="loadingScene" class="scene active"><div class="loading-box">
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Untuk Imbi ❤️</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Quicksand:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Quicksand', sans-serif;
+            background: #ffe5ec;
+            overflow-x: hidden;
+        }
+        /* Mute Button */
+        #muteBtn {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 99999;
+            background: white;
+            padding: 10px;
+            border-radius: 50%;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            font-size: 20px;
+        }
+        /* Mengunci total agar Foto 4 tidak bisa diinteraksi */
+        .disabled-memory {
+            opacity: 0.5 !important;
+            cursor: not-allowed !important;
+            pointer-events: none !important;
+        }
+        /* Efek Orbit Lingkaran Berputar */
+        .orbit-wrapper {
+            position: relative;
+            width: 100%;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(to bottom, #ffb3c6, #ffe5ec);
+        }
+        #heartCore {
+            position: relative;
+            z-index: 10;
+            cursor: pointer;
+            text-align: center;
+            animation: pulse 1.5s infinite;
+        }
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+        /* Simulasi Orbit Melingkar Sederhana agar Rapi di HP/Laptop */
+        .orbit-container {
+            position: absolute;
+            width: 320px;
+            height: 320px;
+            border: 2px dashed rgba(255, 77, 109, 0.3);
+            border-radius: 50%;
+            animation: spin 25s linear infinite;
+        }
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        .orbit-node {
+            position: absolute;
+            width: 50px;
+            height: 50px;
+            background: white;
+            border: 2px solid #ff4d6d;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 12px;
+            cursor: pointer;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            transform: translate(-50%, -50%);
+            animation: counter-spin 25s linear infinite;
+        }
+        @keyframes counter-spin {
+            from { transform: translate(-50%, -50%) rotate(0deg); }
+            to { transform: translate(-50%, -50%) rotate(-360deg); }
+        }
+        /* Posisi Node Orbit Mengelilingi Jantung */
+        .n1 { top: 0%; left: 50%; }
+        .n2 { top: 15%; left: 85%; }
+        .n3 { top: 50%; left: 100%; }
+        .n4 { top: 85%; left: 85%; }
+        .n5 { top: 100%; left: 50%; }
+        .n6 { top: 85%; left: 15%; }
+        .n7 { top: 50%; left: 0%; }
+        .n8 { top: 15%; left: 15%; }
 
-    <h1 class="loading-title">
-        Menyiapkan Kenangan
-    </h1>
+        /* Kotak Modal Popup Paling Depan */
+        #customModal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            z-index: 999999 !important;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        .custom-modal-content {
+            background: white;
+            padding: 25px;
+            border-radius: 20px;
+            max-width: 420px;
+            width: 100%;
+            position: relative;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            text-align: center;
+            animation: popUp 0.3s ease-out;
+        }
+        @keyframes popUp {
+            from { transform: scale(0.8); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+    </style>
+</head>
+<body>
 
-    <h2 class="loading-subtitle">
-        Dewa ❤️ Imbi
-    </h2>
+    <!-- Musik Latar Belakang -->
+    <audio id="bgMusic" loop>
+        <source src="bgmusic.mp3" type="audio/mpeg">
+    </audio>
+    <button id="muteBtn" onclick="toggleMusik()">🔊</button>
 
-    <div class="loading-bar">
-
-        <div id="loadingProgress"></div>
-
-    </div>
-
-    <p id="loadingText">
-        0%
-    </p>
-
-</div>
-
-</section><!-- ===================================== --><!-- GIFT SCENE --><!-- ===================================== --><section id="giftScene" class="scene hidden"><div class="gift-wrapper">
-
-    <h1 class="gift-title">
-        Ada sesuatu untuk Imbi ❤️
-    </h1>
-
-    <p class="gift-subtitle">
-        Klik kadonya ya sayang
-    </p>
-
-    <div id="giftBox" class="gift-box">
-
-        🎁
-
-    </div>
-
-</div>
-
-</section><!-- ===================================== --><!-- PIN SCENE --><!-- ===================================== --><section id="pinScene" class="scene hidden"><div class="pin-container">
-
-    <h2 class="pin-title">
-        Hayo kodenya apa ya 🤭
-    </h2>
-
-    <input
-        id="pinInput"
-        type="password"
-        maxlength="6"
-        placeholder="______"
-        class="pin-input"
-    >
-
-    <button
-        id="checkPinBtn"
-        class="pink-btn">
-
-        Masuk
-
-    </button>
-
-    <p id="pinMessage"></p>
-
-</div>
-
-</section><!-- ===================================== --><!-- ORBIT SCENE --><!-- ===================================== --><section id="orbitScene" class="scene hidden"><div class="orbit-wrapper">
-
-    <p class="memory-label">
-        MEMORI DnA
-    </p>
-
-    <h1 class="memory-title">
-        Kenangan Dewa n Imbi
-    </h1>
-
-    <p class="memory-subtitle">
-        Pencet setiap kenangan nya satu persatu ya sayang ❤️
-    </p>
-
-    <div id="progressBox">
-
-        Kenangan Terbuka
-
-        <span id="progressText">
-            0 / 8
-        </span>
-
-    </div>
-
-    <p id="daysCounter">
-        Menghitung hari...
-    </p>
-
-    <!-- HEART CORE -->
-
-    <div id="heartCore">
-
-        <div class="heart-glow"></div>
-
-        <div class="heart-content">
-
-            <h2>❤️</h2>
-
-            <p>
-                Inti Hati
-            </p>
-
+    <!-- Halaman 1: Loading Screen (Otomatis Selesai dalam 2.5 Detik) -->
+    <section id="loadingScene" class="fixed inset-0 bg-[#ffe5ec] z-50 flex flex-col justify-center items-center">
+        <div class="text-center px-4">
+            <h1 class="text-2xl font-bold text-[#ff4d6d] mb-2">Menyiapkan Kenangan</h1>
+            <h2 class="text-lg text-[#ff758f] font-medium mb-6">Dewa ❤️ Imbi</h2>
+            <div class="w-64 bg-gray-200 h-3 rounded-full overflow-hidden shadow-inner">
+                <div id="loadingProgress" class="bg-[#ff4d6d] h-full transition-all duration-100" style="width: 0%"></div>
+            </div>
+            <p id="loadingText" class="mt-2 text-[#ff4d6d] font-bold">0%</p>
         </div>
+    </section>
+
+    <!-- Halaman 2: Gift Box Scene -->
+    <section id="giftScene" class="hidden fixed inset-0 bg-[#fff0f3] z-40 flex flex-col justify-center items-center">
+        <div class="text-center cursor-pointer" onclick="bukaKadoKePin()">
+            <h1 class="text-2xl font-bold text-[#ff4d6d] mb-2">Ada sesuatu untuk Imbi ❤️</h1>
+            <p class="text-[#ff758f] mb-6">Klik kadonya ya sayang</p>
+            <div class="text-8xl hover:scale-110 transition-transform duration-300">🎁</div>
+        </div>
+    </section>
+
+    <!-- Halaman 3: PIN Gate Scene -->
+    <section id="pinScene" class="hidden fixed inset-0 bg-[#ffe5ec] z-30 flex flex-col justify-center items-center">
+        <div class="bg-white p-8 rounded-3xl shadow-xl text-center max-w-sm w-full mx-4">
+            <h2 class="text-xl font-bold text-[#ff4d6d] mb-4">Hayo kodenya apa ya 🤭</h2>
+            <input id="pinInput" type="text" maxlength="4" placeholder="••••" class="w-full text-center text-2xl tracking-widest border-2 border-[#ff758f] rounded-xl py-2 mb-4 focus:outline-none focus:border-[#ff4d6d]">
+            <button onclick="validasiPinAwal()" class="w-full bg-[#ff4d6d] hover:bg-[#ff758f] text-white font-bold py-2 rounded-xl transition-colors shadow-md">Masuk</button>
+            <p id="pinMessage" class="text-sm font-bold text-[#ff4d6d] mt-3"></p>
+        </div>
+    </section>
+
+    <!-- Halaman 4: Orbit Utama Kenangan -->
+    <section id="orbitScene" class="hidden min-h-screen w-full">
+        <div class="orbit-wrapper flex flex-col justify-between py-10">
+            <div class="text-center z-10 px-4">
+                <p class="text-xs tracking-widest text-[#ff4d6d] font-bold uppercase">Memori DnA</p>
+                <h1 class="text-3xl font-bold text-[#ff4d6d] my-1">Kenangan Dewa n Imbi</h1>
+                <p class="text-sm text-[#ff758f] font-medium">Pencet setiap kenangan nya satu persatu ya sayang ❤️</p>
+                <div class="inline-block bg-white text-[#ff4d6d] font-bold text-sm px-4 py-1.5 rounded-full shadow-md mt-3">
+                    Kenangan Terbuka: <span id="progressText">0 / 8</span>
+                </div>
+            </div>
+
+            <!-- Orbit Inti Lingkaran -->
+            <div class="relative w-full flex justify-center items-center my-auto">
+                <div id="heartCore" onclick="bukaKadoSpesial('letter')">
+                    <div class="text-5xl">❤️</div>
+                    <p class="text-xs text-[#ff4d6d] font-bold mt-1">Inti Hati</p>
+                </div>
+                
+                <!-- Lingkaran Berputar Beserta Tombol Node -->
+                <div class="orbit-container">
+                    <button class="orbit-node n1" onclick="bukaKadoSpesial('photo1')">📸 1</button>
+                    <button class="orbit-node n2" onclick="bukaKadoSpesial('photo2')">📸 2</button>
+                    <button class="orbit-node n3" onclick="bukaKadoSpesial('photo3')">📸 3</button>
+                    <button class="orbit-node n4 disabled-memory" disabled>🔒 4</button>
+                    <button class="orbit-node n5" onclick="bukaKadoSpesial('photo5')">📸 5</button>
+                    <button class="orbit-node n6" onclick="bukaKadoSpesial('letter')">💌 Srt</button>
+                    <button class="orbit-node n7" onclick="bukaKadoSpesial('song')">🎵 Msk</button>
+                    <button class="orbit-node n8" onclick="bukaKadoSpesial('favorite')">🌸 Fav</button>
+                </div>
+            </div>
+
+            <div class="text-center z-10">
+                <p id="daysCounter" class="text-sm font-bold text-[#ff4d6d] bg-white/60 inline-block px-4 py-1 rounded-full shadow-sm">Menghitung kebersamaan kita...</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Kotak Popup Penyaji Konten Foto / Surat -->
+    <div id="customModal">
+        <div class="custom-modal-content">
+            <button onclick="tutupKadoSpesial()" style="position: absolute; top: 10px; right: 15px; font-size: 24px; border: none; background: none; cursor: pointer; color: #ff4d6d; font-weight: bold;">✖</button>
+            <div id="customModalBody" style="margin-top: 15px;"></div>
+        </div>
+    </div>
+
+    <!-- ===================================== -->
+    <!-- TEMPLATE SUMBER DATA MEMORI -->
+    <!-- ===================================== -->
+    <div id="memoryTemplates" class="hidden">
+        
+        <template id="photo1">
+            <img src="foto1.jpg" style="width:100%; border-radius:15px; margin-bottom:12px; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">
+            <p style="color:#4a4a4a; font-size:15px; line-height:1.5;">aku suka banget deh kalo kamu meluk atau ngelakuin sesuatu ke bucket yang aku kasih ke kamu,wkwkwk aku ngerasa kaya aku yang dipeluk anjay</p>
+        </template>
+
+        <template id="photo2">
+            <img src="foto2.jpg" style="width:100%; border-radius:15px; margin-bottom:12px; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">
+            <p style="color:#4a4a4a; font-size:15px; line-height:1.5;">kaya udah lama aja yaa?perasaan baru kemaren yaa wkwkwk makasih yaa Udha ngasih aku bucket,aku bakal ngehargain dan simpen bunga pemberin kamu sayang💗🥰</p>
+        </template>
+
+        <template id="photo3">
+            <img src="foto3.jpg" style="width:100%; border-radius:15px; margin-bottom:12px; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">
+            <p style="color:#4a4a4a; font-size:15px; line-height:1.5;">inii Poto paling lucukk kamuu aku salting terus liatnyaa</p>
+        </template>
+
+        <template id="photo5">
+            <img src="foto5.jpg" style="width:100%; border-radius:15px; margin-bottom:12px; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">
+            <p style="color:#4a4a4a; font-size:15px; line-height:1.5;">Liatt seng anak anak kita nungguin lohh. Udah punya 5 anak ajaa yaa 🤣❤️</p>
+        </template>
+
+        <template id="letter">
+            <h2 style="font-family:'Pacifico', cursive; color:#ff4d6d; font-size:20px; margin-bottom:12px;">💌 Untuk Imbi Sayang</h2>
+            <div style="text-align: left; line-height: 1.6; color:#4a4a4a; font-size:14px; max-height:260px; overflow-y:auto; padding-right:5px;">
+                happy graduation juga ya imbi sayang💗💗maap yak aku ngucapinnya sekarang tadi juga luntur ucapannya 😢😢aku engga nyangka kamu effort banget kalo sama aku seng Sukak dehh🤗🤗🤭💗😻🥰kamu juga ya semoga nanti disono temen temen aku asik asik kalau misalnya kamu di jakarta sehat sehat ya seng kalo di 14 juga sehat sehat PB juga sehat sehat pokonya sehat sehat deh wkwkwkwk jangan lupain aku ya seng jaga pola makan kamu jangan makan mie Mulu makan yang sehat sehat Ama jangan lupa beribadah seng dimanapun kita berada,aku juga pasti bakal kangen sama kamu seng setiap hari malah aku pikiran kamu mulu💗🤗, intinya makasih ya seng plis sama aku terus kecintaan nih wkwkwkwk😜
+            </div>
+        </template>
+
+        <template id="song">
+            <h2 style="color:#ff4d6d; font-size:18px; margin-bottom:10px;">🎵 Akad - Payung Teduh</h2>
+            <p style="margin-bottom:15px; color:#4a4a4a; font-size:14px;">Ini lagu kebangsaan kitaa ya seng ❤️ Pas aku bawain lagu ini pasti keinget kamu muluu.</p>
+            <a href="https://open.spotify.com/embed/track/6g0GzGZ606mZ97WpXorDGl?utm_source=generator" target="_blank" style="background:#1DB954; color:white; padding:8px 20px; border-radius:20px; text-decoration:none; font-weight:bold; display:inline-block; font-size:14px;">Buka Spotify</a>
+        </template>
+
+        <template id="favorite">
+            <h2 style="color:#ff4d6d; font-size:18px; margin-bottom:10px;">🌸 Hal Favorit</h2>
+            <p style="color:#4a4a4a; font-size:15px;">Semua hal yang ada di diri kamu adalah favorit aku, seng! Selamanya ❤️</p>
+        </template>
 
     </div>
 
-    <!-- ORBIT 1 -->
-
-    <div class="orbit orbit1">
-
-        <button
-            class="memory-item"
-            data-target="photo1">
-
-            📸 Foto 1
-
-        </button>
-
-    </div>
-
-    <!-- ORBIT 2 -->
-
-    <div class="orbit orbit2">
-
-        <button
-            class="memory-item"
-            data-target="photo2">
-
-            📸 Foto 2
-
-        </button>
-
-    </div>
-
-    <!-- ORBIT 3 -->
-
-    <div class="orbit orbit3">
-
-        <button
-            class="memory-item"
-            data-target="photo3">
-
-            📸 Foto 3
-
-        </button>
-
-    </div>
-
-    <!-- ORBIT 4 -->
-
-    <div class="orbit orbit4">
-
-        <button
-            class="memory-item"
-            data-target="photo4">
-
-            📸 Foto 4
-
-        </button>
-
-    </div>
-
-    <!-- ORBIT 5 -->
-
-    <div class="orbit orbit5">
-
-        <button
-            class="memory-item"
-            data-target="photo5">
-
-            📸 Foto 5
-
-        </button>
-
-    </div>
-<!-- ORBIT 6 -->    <div class="orbit orbit6">
-
-        <button
-            class="memory-item"
-            data-target="letter">
-
-            💌 Surat
-
-        </button>
-
-    </div>
-
-    <!-- ORBIT 7 -->
-
-    <div class="orbit orbit7">
-
-        <button
-            class="memory-item"
-            data-target="song">
-
-            🎵 Lagu Kita
-
-        </button>
-
-    </div>
-
-    <!-- ORBIT 8 -->
-
-    <div class="orbit orbit8">
-
-        <button
-            class="memory-item"
-            data-target="favorite">
-
-            🌸 Favorit
-
-        </button>
-
-    </div>
-
-</div>
-
-</section><!-- ===================================== --><!-- MODAL --><!-- ===================================== --><div id="modal" class="hidden"><div class="modal-content">
-
-    <button id="closeModal" class="close-btn">
-        ✖
-    </button>
-
-    <div id="modalBody"></div>
-
-</div>
-
-</div><!-- ===================================== --><!-- BOUQUET SCENE --><!-- ===================================== --><section id="bouquetScene" class="scene hidden"><div class="bouquet-container">
-
-    <div class="bouquet-flowers">
-
-        🌷 🌸 🌹 🌸 🌷
-
-    </div>
-
-    <h1 class="bouquet-title">
-
-        Thank You For Staying
-
-    </h1>
-
-    <p class="bouquet-subtitle">
-
-        Terimakasih karena tetap ada sayang ❤️
-
-    </p>
-
-    <button
-        id="loveBtn"
-        class="pink-btn">
-
-        Aku Sayang Kamu ❤️
-
-    </button>
-
-    <h2
-        id="foreverText"
-        class="hidden">
-
-        Forever Us ❤️
-
-    </h2>
-
-</div>
-
-</section><!-- ===================================== --><!-- ENDING SCENE --><!-- ===================================== --><section
-    id="endingScene"
-    class="scene hidden"><div class="ending-wrapper">
-
-    <h1>
-        22 • 05 • 26
-    </h1>
-
-    <h2>
-        Hari dimana semuanya dimulai
-    </h2>
-
-    <h1>
-        Dewa ❤️ Imbi
-    </h1>
-
-    <h2>
-        Forever Us
-    </h2>
-
-</div>
-
-</section><!-- ===================================== --><!-- MEMORY TEMPLATES --><!-- ===================================== --><div id="memoryTemplates" class="hidden"><!-- FOTO 1 -->
-
-<template id="photo1">
-
-    <img
-        src="assets/foto1.jpg"
-        class="memory-photo">
-
-    <p>
-
-        Kalo kamu meluk atau ngelakuin sesuatu ke bunga
-        yang aku kasih aku ngerasa kaya aku yang dipeluk
-        deh wkwkwkwk.
-
-        Bunga kamu wangii bangett makasih yaa
-        udah ngasih aku segala hwhe.
-
-        Kamu effort bangett dehh aku sukakkk ❤️
-
-    </p>
-
-</template>
-
-<!-- FOTO 2 -->
-
-<template id="photo2">
-
-    <img
-        src="assets/foto2.jpg"
-        class="memory-photo">
-
-    <p>
-
-        Liat gaa yang kemarin kita fotbar?
-
-        Pertama kali loh itu kita wkwkwkwk.
-
-        Kenapa aku nembak nya pas akhir yaa wkwkwk.
-
-        Kangenn dehh ❤️
-
-    </p>
-
-</template>
-
-<!-- FOTO 3 -->
-
-<template id="photo3">
-
-    <img
-        src="assets/foto3.jpg"
-        class="memory-photo">
-
-    <p>
-
-        Ini foto kamu yang paling LUCUKKK
-        GEMESHH BANGETT.
-
-        Aku salting pas kamu kirim ke akuu.
-
-        Cantiknya full keliatann ❤️
-
-    </p>
-
-</template>
-
-<!-- FOTO 4 -->
-
-<template id="photo4">
-
-    <img
-        src="assets/foto4.jpg"
-        class="memory-photo">
-
-    <p>
-
-        Inget gaa kejadian aku nembak kamu?
-
-        Lucu deh kalo diinget.
-
-        Makasihh yakkk.
-
-        Semoga kita sama sama terus ❤️
-
-    </p>
-
-</template>
-
-<!-- FOTO 5 -->
-
-<template id="photo5">
-
-    <img
-        src="assets/foto5.jpg"
-        class="memory-photo">
-
-    <p>
-
-        Liatt seng anak anak kita nungguin lohh.
-
-        Udah punya 5 anak ajaa yaa 🤣❤️
-
-    </p>
-
-</template>
-
-<!-- SURAT -->
-
-<template id="letter">
-
-    <h2>
-        💌 Untuk Imbi Sayang
-    </h2>
-
-    <p>
-
-        Halo sayang.
-
-        Kamu jangan ngambek ya sama aku?
-
-        Wkwkwkwk capek tauu kalo kamu ngambek.
-
-        Ngambek nya jangan lama lama ya.
-
-        Maapin aku ya kadang kadang aku bikin
-        kamu cemburu dan ngambek mulu.
-
-        Aku pasti bakal kangen banget sama kamu.
-
-        Kamu juga disana sehat sehat yaa.
-
-        Jangan makan mie, seblak, ceker muluu.
-
-        Kalo sakit aku susah jenguknyaa wkwkwkwk.
-
-        See u yaa seng ❤️
-
-    </p>
-
-</template>
-
-<!-- LAGU -->
-
-<template id="song">
-
-    <h2>
-        🎵 Akad - Payung Teduh
-    </h2>
-
-    <p>
-
-        Ini lagu kebangsaan kitaa ya seng ❤️
-
-        Pas aku bawain lagu ini pasti
-        keinget kamu muluu.
-
-    </p>
-
-    <a
-        href="https://open.spotify.com/"
-        target="_blank"
-        class="spotify-btn">
-
-        Buka Spotify
-
-    </a>
-
-</template>
-
-</div><script src="script.js"></script></body>
+    <!-- ===================================== -->
+    <!-- LOGIKAL SKRIP MANDIRI (SANGAT BERSIH) -->
+    <!-- ===================================== -->
+    <script>
+        // 1. Logika Loading Otomatis Saat Web Dibuka
+        window.addEventListener('DOMContentLoaded', () => {
+            const progress = document.getElementById('loadingProgress');
+            const text = document.getElementById('loadingText');
+            let width = 0;
+            
+            const interval = setInterval(() => {
+                if (width >= 100) {
+                    clearInterval(interval);
+                    document.getElementById('loadingScene').classList.add('hidden');
+                    document.getElementById('giftScene').classList.remove('hidden');
+                } else {
+                    width += 4;
+                    if(width > 100) width = 100;
+                    progress.style.width = width + '%';
+                    text.innerText = width + '%';
+                }
+            }, 80);
+
+            // Tampilkan jumlah hari jadian secara real-time
+            hitungHariJadian();
+        });
+
+        // 2. Transisi Klik Kado 🎁
+        function bukaKadoKePin() {
+            document.getElementById('giftScene').classList.add('hidden');
+            document.getElementById('pinScene').classList.remove('hidden');
+            // Putar musik otomatis begitu kado dibuka
+            const music = document.getElementById('bgMusic');
+            music.play().catch(() => console.log("Menunggu interaksi user untuk memutar musik"));
+        }
+
+        // 3. Sistem Validasi PIN Gerbang Utama (2205)
+        function validasiPinAwal() {
+            const input = document.getElementById('pinInput').value.trim();
+            const msg = document.getElementById('pinMessage');
+            
+            if (input === '2205') {
+                document.getElementById('pinScene').classList.add('hidden');
+                document.getElementById('orbitScene').classList.remove('hidden');
+            } else {
+                msg.innerText = "Ups! Password-nya salah 🤭 Petunjuk: Tanggal jadian kita!";
+            }
+        }
+
+        // 4. Sistem Sakelar On/Off Audio Musik
+        function toggleMusik() {
+            const music = document.getElementById('bgMusic');
+            const btn = document.getElementById('muteBtn');
+            if (music.paused) {
+                music.play();
+                btn.innerText = "🔊";
+            } else {
+                music.pause();
+                btn.innerText = "🔈";
+            }
+        }
+
+        // 5. Fungsi Mutlak Pembuka Jendela Foto/Surat Tanpa Hambatan
+        function bukaKadoSpesial(templateId) {
+            const template = document.getElementById(templateId);
+            const modal = document.getElementById('customModal');
+            const modalBody = document.getElementById('customModalBody');
+            
+            if (template && modal && modalBody) {
+                const clone = template.content.cloneNode(true);
+                modalBody.innerHTML = "";
+                modalBody.appendChild(clone);
+                modal.style.display = "flex";
+                
+                catatProgressManual(templateId);
+            }
+        }
+
+        function tutupKadoSpesial() {
+            document.getElementById('customModal').style.display = "none";
+        }
+
+        // 6. Penghitung Progress Klik Kenangan
+        let kumpulanTerbuka = new Set();
+        function catatProgressManual(id) {
+            kumpulanTerbuka.add(id);
+            const textEl = document.getElementById('progressText');
+            if(textEl) {
+                // Maksimal 7 karena foto 4 dikunci total
+                textEl.innerText = kumpulanTerbuka.size + " / 8";
+            }
+        }
+
+        // 7. Fungsi Penghitung Hari Jadian Otomatis Sejak 22 Mei 2026
+        function hitungHariJadian() {
+            const tglJadian = new Date("2026-05-22");
+            const tglSekarang = new Date();
+            const selisihWaktu = tglSekarang - tglJadian;
+            const selisihHari = Math.floor(selisihWaktu / (1000 * 60 * 60 * 24));
+            
+            const counterEl = document.getElementById('daysCounter');
+            if (counterEl) {
+                if (selisihHari >= 0) {
+                    counterEl.innerText = "Kita sudah berjalan bersama " + selisihHari + " hari ❤️";
+                } else {
+                    counterEl.innerText = "Menghitung hari menuju kebahagiaan... ❤️";
+                }
+            }
+        }
+    </script>
+</body>
 </html>
